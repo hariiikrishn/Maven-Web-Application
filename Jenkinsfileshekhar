@@ -1,4 +1,3 @@
-
 pipeline{
     agent any;
     tools{
@@ -6,7 +5,7 @@ pipeline{
     }
     parameters {
         choice (
-            name:'branch',choices:["development","main"], description:"select the branch to clone"
+            name:'branch',choices:["dev","main"], description:"select the branch to clone"
         )
     }
     stages{
@@ -20,5 +19,25 @@ pipeline{
                 sh 'mvn clean package'
             }
         }
+        stage('build docker image'){
+            steps{
+              sh 'docker build -t rachhit/maven-web-application:1 .'
+            }
+        }
+        stage('push docker image'){
+            steps{
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-credentials',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]){
+                    sh '''
+                       echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                       docker push rachhit/maven-web-application:1
+                    '''
+                }
+            }
     }
 }
