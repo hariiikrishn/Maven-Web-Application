@@ -1,1 +1,24 @@
 
+pipeline{
+    agent any;
+    tools{
+        maven 'maven3.9.10'
+    }
+    parameters {
+        choice (
+            name:'branch',choices:["dev","main"], description:"select the branch to clone"
+        )
+    }
+    stages{
+        stage('checkout code'){
+            steps{
+              git branch:"${params.branch}", url:'https://github.com/hariiikrishn/Maven-Web-Application.git'
+            }
+        },
+        stage('build'){
+            steps{
+                sh 'mvn clean package'
+            }
+        }
+    }
+}
