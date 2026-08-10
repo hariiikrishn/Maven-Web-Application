@@ -14,7 +14,7 @@ pipeline{
             steps{
               git branch:"${params.branch}", url:'https://github.com/hariiikrishn/Maven-Web-Application.git'
             }
-        },
+        }
         stage('build'){
             steps{
                 sh 'mvn clean package'
