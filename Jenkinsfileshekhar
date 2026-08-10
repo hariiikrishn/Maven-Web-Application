@@ -40,5 +40,23 @@ pipeline{
                 }
             }
     }
+  stage('deploy to other server'){
+                steps{
+                    sshagent(['deploy-server-ssh']){
+                         sh '''
+                            ssh -o StrictHostKeyChecking=no ubuntu@3.111.35.235 "
+                            docker pull rachhit/maven-web-application:1 &&
+                            docker stop maven-web-app || true &&
+                            docker rm maven-web-app || true &&
+                            docker run -d \
+                           --name maven-web-app \
+                           -p 8080:8080 \
+                           --restart unless-stopped \
+                           rachhit/maven-web-application:1
+                          "
+                         '''
+                    }
+                }
+            }
 }
 }
